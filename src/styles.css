@@ -1,0 +1,147 @@
+body {
+  font-family: 'Open Sans', sans-serif;
+  margin: 10%;
+  background: #f0f0f0;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.main {
+  width: 60%;
+  height: 30vmax;
+  box-shadow: 0 0 1vmax #ddd;
+  background: white;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+  padding: 0 2vmax;
+  user-select: none;
+}
+
+.timer-container {
+  padding-top: 1vmax;
+}
+
+.timer {
+  font-size: 2vmax;
+}
+
+.progress-box {
+  background: #ddd;
+  border-radius: .375rem;
+  display: inline-block;
+  height: 1.5vmax;
+  margin-top: 1.5vmax;
+  width: 100%;
+}
+
+.progress-bar {
+  width: 0;
+  height: 100%;
+  background-color: #47f9ff;
+  border-radius: .375rem;
+  transition: width .2s cubic-bezier(.02, .01, .47, 1);
+}
+
+.progress-bar:hover {
+  width: 50%;
+}
+
+.task {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.task-title {
+  font-size: 1.5vmax;
+}
+
+.task-word {
+  background-color: #47f9ff;
+  border-radius: 0.5vmax;
+  margin-left: 0.5vmax;
+  font-size: 1.6vmax;
+  padding: 0.5vmax;
+}
+
+.answers-box {
+  display: flex;
+  justify-content: space-around;
+}
+
+.answer-container {
+  margin-top: 2vmax;
+  background: #f0f0f0b4;
+  border-radius: 0.4vmax;
+  padding: 1vmax;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.answer-container:hover {
+  background-color: #47f9ff;
+  transition: 0.5s;
+}
+
+.answer-container_wrong {
+  background: #f32626;
+  color: white;
+}
+
+.answer-container_wrong:hover {
+  background: #f32626;
+  color: white;
+}
+
+.answer-container_right {
+  background: #0ae20a;
+}
+
+.answer-container_right:hover {
+  background: #0ae20a;
+}
+
+.answer {
+  font-size: 1.5vmax;
+}
+
+.line {
+  margin-top: 1vmax;
+  width: 100%;
+  height: 0.4vmax;
+  background: #f0f0f0;
+  border-radius: 0.5vmax;
+}
+
+.button-container {
+  margin: 1vmax;
+  display: flex;
+  justify-content: center;
+}
+
+.button {
+  background: #f0f0f0b4;
+  width: 40%;
+  height: 2vmax;
+  border: none;
+  outline: none;
+  border-radius: 2vmax;
+  cursor: pointer;
+  user-select: none;
+}
+
+.button:hover {
+  background-color: #47f9ff;
+  transition: 0.5s;
+}
+
+.button-text {
+  font-size: 1.2vmax;
+}
