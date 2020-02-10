@@ -1,5 +1,3 @@
-import './styles.css';
-
 'use strict';
 
 var rightAnswers = ['to run', 'to swim', 'to jump', 'to fly', 'a dog', 'a cat', 'monitor', 'clothes', 'system', 'project'];
@@ -11,34 +9,53 @@ var titleList = ['word 1', 'Word 2', 'Word 3', 'Word 4', 'Word 5', 'Word 6', 'Wo
 var randomAnswers = ['to go', 'sneak', 'puddle', 'ice', 'to shout', 'to start', 'a board', 'child', 'to accept', 'advice', 'attention', 'blood', 'to care'];
 var questions = ['бегать', 'плавать', 'прыгать', 'летать', 'собака', 'кошка', 'монитор', 'одежда', 'система', 'проект'];
 
-// function Tasks(question, answer) {
-//   this.question = question;
-//   this.answer = answer;
-// }
+function Task(question, answer) {
+  this.question = question;
+  this.answer = answer;
+
+}
+
+function QuestionLibrary() {
+  this.questions = [
+    { id: 1, question: 'a dog', answers: ['собака', 'кошка', 'спутник', 'машина'], correct: 'собака' },
+    { id: 2, question: 'a cat', answers: ['вид', 'кошка', 'самолет', 'двигатель'], correct: 'кошка' },
+    { id: 3, question: 'to run', answers: ['сказать', 'светофор', 'бегать', 'проект'], correct: 'бегать' },
+    { id: 4, question: 'to swim', answers: ['кошка', 'плавать', 'бегать', 'помнить'], correct: 'плавать' },
+    { id: 5, question: 'to jump', answers: ['лежать', 'ответить', 'прыгать', 'решать'], correct: 'прыгать' },
+    { id: 6, question: 'to fly', answers: ['летать', 'одежда', 'прыгать', 'требовать'], correct: 'летать' },
+    { id: 7, question: 'a monitor', answers: ['собака', 'монитор', 'жизнь', 'дом'], correct: 'монитор' },
+    { id: 8, question: 'clothes', answers: ['день', 'процесс', 'качество', 'одежда'], correct: 'одежда' },
+    { id: 9, question: 'a system', answers: ['государство', 'система', 'прыгать', 'роль'], correct: 'система' },
+    { id: 10, question: 'a project', answers: ['идея', 'проект', 'номер', 'доллар'], correct: 'проект' }
+  ];
+}
+const Library = new QuestionLibrary;
+
+const task1 = new Task('a dog', 'собака');
+const task2 = new Task('a cat', 'кошка');
+const task3 = new Task('to run', 'бегать');
+const task4 = new Task('to swim', 'плавать');
+const task5 = new Task('to jump', 'прыгать');
+const task6 = new Task('to fly', 'летать');
+const task7 = new Task('a monitor', 'монитор');
+const task8 = new Task('clothes', 'одежда');
+const task9 = new Task('a system', 'система');
+const task10 = new Task('a project', 'проект');
 
 
-// var task1 = new Tasks('бегать', 'to run');
-// var task2 = new Tasks('плавать', 'to swim');
-// var task3 = new Tasks('прыгать', 'to jump');
-// var task4 = new Tasks('летать', 'to fly');
-// var task5 = new Tasks('собака', 'a dog');
-// var task6 = new Tasks('кошка', 'a cat');
-// var task7 = new Tasks('монитор', 'monitor');
-// var task8 = new Tasks('одежда', 'clothes');
-// var task9 = new Tasks('система', 'system');
-// var task10 = new Tasks('проект', 'project');
+function Test(tasks) {
+  this.tasks = tasks;
+  this.status = false;
+}
 
-// var listOfTasks = [task2, task3, task4, task5, task6, task7, task8, task9, task10];
+const test1 = new Test([task1, task2, task3, task4, task5, task6, task7, task8, task9, task10]);
 
-
-
-
-var rightAnswer;
-var restAnswer1;
-var restAnswer2;
-var restAnswer3;
 
 function getRandomAnswer() {
+  var random1;
+  var random2;
+  var random3;
+  var random4;
   var numbers = [];
   while (numbers.length < 4) {
     var randomNumber = Math.floor(Math.random() * 4);
@@ -46,51 +63,31 @@ function getRandomAnswer() {
       numbers.push(randomNumber);
     }
   }
-  rightAnswer = numbers[0];
-  restAnswer1 = numbers[1];
-  restAnswer2 = numbers[2];
-  restAnswer3 = numbers[3];
-}
-
-var randomIndex1;
-var randomIndex2;
-var randomIndex3;
-
-function getRandomNumber() {
-  var answersCount = randomAnswers.length;
-  var numbers = [];
-  while (numbers.length < 3) {
-    var randomNumber = Math.floor(Math.random() * answersCount);
-    if (numbers.indexOf(randomNumber) === -1) {
-      numbers.push(randomNumber);
-    }
-  }
-  randomIndex1 = numbers[0];
-  randomIndex2 = numbers[1];
-  randomIndex3 = numbers[2];
+  window.random1 = numbers[0];
+  window.random2 = numbers[1];
+  window.random3 = numbers[2];
+  window.random4 = numbers[3];
 }
 
 
-
-
-
-function generateTask(title, question, answerNumber) {
+function generateTask(title, index) {
   if (loopOut < 10) {
     getRandomAnswer();
-    getRandomNumber();
-    taskSelector.innerHTML = '<h1 class="task-title">' + titleList[title] + ':' + '</h1><span class="task-word">' + questions[question] + '</span>';
-    answer[rightAnswer].innerHTML = '<div class ="answer">' + rightAnswers[answerNumber] + '</div>';
-    answer[restAnswer1].innerHTML = '<div class ="answer">' + randomAnswers[randomIndex1] + '</div>';
-    answer[restAnswer2].innerHTML = '<div class ="answer">' + randomAnswers[randomIndex2] + '</div>';
-    answer[restAnswer3].innerHTML = '<div class ="answer">' + randomAnswers[randomIndex3] + '</div>';
+    taskSelector.innerHTML = '<h1 class="task-title">' + titleList[title] + ':' + '</h1><span class="task-word">' + Library.questions[index].question + '</span>';
+    answer[0].innerHTML = '<div class ="answer">' + Library.questions[index].answers[random1] + '</div>';
+    answer[1].innerHTML = '<div class ="answer">' + Library.questions[index].answers[random2] + '</div>';
+    answer[2].innerHTML = '<div class ="answer">' + Library.questions[index].answers[random3] + '</div>';
+    answer[3].innerHTML = '<div class ="answer">' + Library.questions[index].answers[random4] + '</div>';
   }
 }
+
 
 var numberOftask = 0;
 
 function updateUi() {
-  generateTask(numberOftask, numberOftask, numberOftask);
-  numberOftask += 1;
+  generateTask(numberOftask, numberOftask);
+  getRandomAnswer();
+  isAnswerRight();
 }
 var start = 0;
 
@@ -103,63 +100,73 @@ function progress() {
 
 }
 
-var stopper = false;
+var checked = false;
 
 function showRightAnswer() {
-  stopper = true;
-  answer[rightAnswer].classList.add('answer-container_right');
-
+  for (var i = 0; i < answer.length; i++) {
+    if (answer[i].innerText === Library.questions[numberOftask].correct) {
+      answer[i].classList.add('answer-container_right');
+      checked = true;
+      console.log(answer[i] + 'this is the right answer')
+      timeLock = true;
+    }
+  }
 }
 
 function showWrongAnswer(e) {
-  if (stopper === false) {
+  if (checked === false && answer[e].innerText !== Library.questions[numberOftask].correct) {
     answer[e].classList.add('answer-container_wrong');
   }
 }
+
 
 function cleanAnswers() {
   for (var i = 0; i < answer.length; i++) {
     answer[i].classList.remove('answer-container_right');
     answer[i].classList.remove('answer-container_wrong');
   }
-  stopper = false;
+  checked = false;
 }
 
 function isAnswerRight() {
-  answer[rightAnswer].addEventListener('click', function() {
+  answer[0].addEventListener('click', function() {
+    showWrongAnswer(0);
     showRightAnswer();
   });
-  answer[restAnswer1].addEventListener('click', function() {
-    showWrongAnswer(restAnswer1);
+  answer[1].addEventListener('click', function() {
+    showWrongAnswer(1);
     showRightAnswer();
   });
-  answer[restAnswer2].addEventListener('click', function() {
-    showWrongAnswer(restAnswer2);
+  answer[2].addEventListener('click', function() {
+    showWrongAnswer(2);
     showRightAnswer();
   });
-  answer[restAnswer3].addEventListener('click', function() {
-    showWrongAnswer(restAnswer3);
+  answer[3].addEventListener('click', function() {
+    showWrongAnswer(3);
     showRightAnswer();
   });
 }
 
-function timeOut(time, lock) {
-  lock = false;
-  if (lock === false) {
-    time = 10;
-    var countDown = setInterval(() => {
-      var timer = document.querySelector('.timer');
-      timer.innerHTML = time;
-      time -= 1;
+var timeLock = false
+
+function timeOut(time) {
+  time = 10;
+  var countDown = setInterval(() => {
+    var timer = document.querySelector('.timer');
+    timer.innerHTML = time;
+    time -= 1;
+    if (timeLock === false) {
       if (time < 0) {
         clearInterval(countDown);
         timer.innerHTML = 'time out !';
         showRightAnswer();
         stopAfunction = 1;
       }
-    }, 1000);
-    lock = true;
-  }
+    } else {
+      clearInterval(countDown);
+      timer.innerHTML = time + 1;
+    }
+  }, 1000);
 
 }
 
@@ -173,28 +180,31 @@ var loopOut = 1;
 
 
 button.addEventListener('click', function() {
+  cleanAnswers();
+  numberOftask += 1;
+  timeLock = false;
+  timeOut();
   progress();
   updateUi();
-  cleanAnswers();
   loopOut += 1;
 });
 timeOut();
 updateUi();
-isAnswerRight();
+
 
 
 
 
 /*
-function progress(time) {
-  var start = 0;
-  var time = Math.round(time * 1000 / 100);
-  var progressElement = document.querySelector('.progress-bar');
-  var timer = setInterval(function() {
-    if (start > 100) {
-      clearInterval(timer);
-    } else { progressElement.style.width = start + '%' }
-    start++;
-  }, time);
-}
+  function progress(time) {
+    var start = 0;
+    var time = Math.round(time * 1000 / 100);
+    var progressElement = document.querySelector('.progress-bar');
+    var timer = setInterval(function() {
+      if (start > 100) {
+        clearInterval(timer);
+      } else { progressElement.style.width = start + '%' }
+      start++;
+    }, time);
+  }
 */
