@@ -1,13 +1,12 @@
 'use strict';
 
-var rightAnswers = ['to run', 'to swim', 'to jump', 'to fly', 'a dog', 'a cat', 'monitor', 'clothes', 'system', 'project'];
-var taskTitle = document.querySelector('.task-title');
+
 var taskSelector = document.querySelector('.task');
 var answer = document.querySelectorAll('.answer-container');
 var stopAfunction = 0;
 var titleList = ['word 1', 'Word 2', 'Word 3', 'Word 4', 'Word 5', 'Word 6', 'Word 7', 'Word 8', 'Word 9', 'Word 10'];
-var randomAnswers = ['to go', 'sneak', 'puddle', 'ice', 'to shout', 'to start', 'a board', 'child', 'to accept', 'advice', 'attention', 'blood', 'to care'];
-var questions = ['бегать', 'плавать', 'прыгать', 'летать', 'собака', 'кошка', 'монитор', 'одежда', 'система', 'проект'];
+var loopOut = 1;
+
 
 function Task(question, answer) {
   this.question = question;
@@ -29,7 +28,7 @@ function QuestionLibrary() {
     { id: 10, question: 'a project', answers: ['идея', 'проект', 'номер', 'доллар'], correct: 'проект' }
   ];
 }
-const Library = new QuestionLibrary;
+const Library = new QuestionLibrary();
 
 const task1 = new Task('a dog', 'собака');
 const task2 = new Task('a cat', 'кошка');
@@ -84,11 +83,7 @@ function generateTask(title, index) {
 
 var numberOftask = 0;
 
-function updateUi() {
-  generateTask(numberOftask, numberOftask);
-  getRandomAnswer();
-  isAnswerRight();
-}
+
 var start = 0;
 
 function progress() {
@@ -96,18 +91,18 @@ function progress() {
   var progressElement = document.querySelector('.progress-bar');
   if (start > 100) {
     start = 100;
-  } else { progressElement.style.width = start + '%' }
+  } else { progressElement.style.width = start + '%'; }
 
 }
 
 var checked = false;
+var timeLock = false;
 
 function showRightAnswer() {
   for (var i = 0; i < answer.length; i++) {
     if (answer[i].innerText === Library.questions[numberOftask].correct) {
       answer[i].classList.add('answer-container_right');
       checked = true;
-      console.log(answer[i] + 'this is the right answer')
       timeLock = true;
     }
   }
@@ -147,7 +142,12 @@ function isAnswerRight() {
   });
 }
 
-var timeLock = false
+function updateUi() {
+  generateTask(numberOftask, numberOftask);
+  getRandomAnswer();
+  isAnswerRight();
+}
+
 
 function timeOut(time) {
   time = 10;
@@ -172,9 +172,6 @@ function timeOut(time) {
 
 
 var button = document.querySelector('.button');
-var loopOut = 1;
-
-
 
 
 
