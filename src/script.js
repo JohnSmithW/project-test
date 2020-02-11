@@ -45,6 +45,7 @@ const task10 = new Task('a project', 'проект');
 function Test(tasks) {
   this.tasks = tasks;
   this.status = false;
+  this.rightAnswersSum = 0;
 }
 
 const test1 = new Test([task1, task2, task3, task4, task5, task6, task7, task8, task9, task10]);
@@ -78,6 +79,11 @@ function generateTask(title, index) {
     answer[2].innerHTML = '<div class ="answer">' + Library.questions[index].answers[random3] + '</div>';
     answer[3].innerHTML = '<div class ="answer">' + Library.questions[index].answers[random4] + '</div>';
   }
+  if (loopOut >= 10) {
+    taskSelector.innerHTML = '<h1 class="task-title">' + 'total' + ':' + '</h1>';
+    var box = document.querySelector('.answers-box');
+    box.innerHTML = '<span class="task-word">' + 'Right answers: ' + test1.rightAnswersSum + '</span>';
+  }
 }
 
 
@@ -97,20 +103,28 @@ function progress() {
 
 var checked = false;
 var timeLock = false;
+var userWrong = false;
+var pass = false;
 
-function showRightAnswer() {
+function showRightAnswer(autoShow) {
   for (var i = 0; i < answer.length; i++) {
     if (answer[i].innerText === Library.questions[numberOftask].correct) {
       answer[i].classList.add('answer-container_right');
       checked = true;
       timeLock = true;
+      if (!autoShow && userWrong === false) {
+        test1.rightAnswersSum++;
+        userWrong = true;
+      }
     }
   }
+  pass = true;
 }
 
 function showWrongAnswer(e) {
   if (checked === false && answer[e].innerText !== Library.questions[numberOftask].correct) {
     answer[e].classList.add('answer-container_wrong');
+    userWrong = true;
   }
 }
 
@@ -121,24 +135,25 @@ function cleanAnswers() {
     answer[i].classList.remove('answer-container_wrong');
   }
   checked = false;
+  userWrong = false;
 }
 
 function isAnswerRight() {
   answer[0].addEventListener('click', function() {
     showWrongAnswer(0);
-    showRightAnswer();
+    showRightAnswer(false);
   });
   answer[1].addEventListener('click', function() {
     showWrongAnswer(1);
-    showRightAnswer();
+    showRightAnswer(false);
   });
   answer[2].addEventListener('click', function() {
     showWrongAnswer(2);
-    showRightAnswer();
+    showRightAnswer(false);
   });
   answer[3].addEventListener('click', function() {
     showWrongAnswer(3);
-    showRightAnswer();
+    showRightAnswer(false);
   });
 }
 
@@ -159,7 +174,7 @@ function timeOut(time) {
       if (time < 0) {
         clearInterval(countDown);
         timer.innerHTML = 'time out !';
-        showRightAnswer();
+        showRightAnswer(true);
         stopAfunction = 1;
       }
     } else {
@@ -177,13 +192,16 @@ var button = document.querySelector('.button');
 
 
 button.addEventListener('click', function() {
-  cleanAnswers();
-  numberOftask += 1;
-  timeLock = false;
-  timeOut();
-  progress();
-  updateUi();
-  loopOut += 1;
+  if (pass === true) {
+    cleanAnswers();
+    numberOftask += 1;
+    timeLock = false;
+    timeOut();
+    progress();
+    updateUi();
+    loopOut += 1;
+    pass = false;
+  }
 });
 timeOut();
 updateUi();
