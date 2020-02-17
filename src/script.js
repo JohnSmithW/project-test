@@ -8,11 +8,7 @@ var titleList = ['word 1', 'Word 2', 'Word 3', 'Word 4', 'Word 5', 'Word 6', 'Wo
 var loopOut = 1;
 
 
-function Task(question, answer) {
-  this.question = question;
-  this.answer = answer;
 
-}
 
 function QuestionLibrary() {
   this.questions = [
@@ -27,28 +23,42 @@ function QuestionLibrary() {
     { id: 9, question: 'a system', answers: ['государство', 'система', 'прыгать', 'роль'], correct: 'система' },
     { id: 10, question: 'a project', answers: ['идея', 'проект', 'номер', 'доллар'], correct: 'проект' }
   ];
+  this.getRandomQuestions = function() {
+    var readyList = [];
+    var randomList = [];
+    while (randomList.length < 10) {
+      var number = Math.floor(Math.random() * 10);
+      if (randomList.indexOf(number) === -1) {
+        randomList.push(number);
+      }
+    }
+    for (var i of randomList) {
+      readyList.push(this.questions[i]);
+    }
+    return (readyList);
+  };
 }
-const Library = new QuestionLibrary();
-
-const task1 = new Task('a dog', 'собака');
-const task2 = new Task('a cat', 'кошка');
-const task3 = new Task('to run', 'бегать');
-const task4 = new Task('to swim', 'плавать');
-const task5 = new Task('to jump', 'прыгать');
-const task6 = new Task('to fly', 'летать');
-const task7 = new Task('a monitor', 'монитор');
-const task8 = new Task('clothes', 'одежда');
-const task9 = new Task('a system', 'система');
-const task10 = new Task('a project', 'проект');
+const library = new QuestionLibrary();
 
 
-function Test(tasks) {
-  this.tasks = tasks;
+
+function Test(questions) {
+  this.questions = questions;
   this.status = false;
-  this.rightAnswersSum = 0;
+  this.run = function() {
+    this.status = true;
+  };
+  this.answer = function(questionId, answer) {
+    this.questions[questionId].answer = answer;
+  }
 }
 
-const test1 = new Test([task1, task2, task3, task4, task5, task6, task7, task8, task9, task10]);
+const questions = library.getRandomQuestions();
+const test = new Test(questions);
+
+
+
+
 
 
 function getRandomAnswer() {
@@ -73,11 +83,11 @@ function getRandomAnswer() {
 function generateTask(title, index) {
   if (loopOut < 10) {
     getRandomAnswer();
-    taskSelector.innerHTML = '<h1 class="task-title">' + titleList[title] + ':' + '</h1><span class="task-word">' + Library.questions[index].question + '</span>';
-    answer[0].innerHTML = '<div class ="answer">' + Library.questions[index].answers[random1] + '</div>';
-    answer[1].innerHTML = '<div class ="answer">' + Library.questions[index].answers[random2] + '</div>';
-    answer[2].innerHTML = '<div class ="answer">' + Library.questions[index].answers[random3] + '</div>';
-    answer[3].innerHTML = '<div class ="answer">' + Library.questions[index].answers[random4] + '</div>';
+    taskSelector.innerHTML = '<h1 class="task-title">' + titleList[title] + ':' + '</h1><span class="task-word">' + library.questions[index].question + '</span>';
+    answer[0].innerHTML = '<div class ="answer">' + library.questions[index].answers[random1] + '</div>';
+    answer[1].innerHTML = '<div class ="answer">' + library.questions[index].answers[random2] + '</div>';
+    answer[2].innerHTML = '<div class ="answer">' + library.questions[index].answers[random3] + '</div>';
+    answer[3].innerHTML = '<div class ="answer">' + library.questions[index].answers[random4] + '</div>';
   }
   if (loopOut >= 10) {
     taskSelector.innerHTML = '<h1 class="task-title">' + 'total' + ':' + '</h1>';
@@ -108,12 +118,12 @@ var pass = false;
 
 function showRightAnswer(autoShow) {
   for (var i = 0; i < answer.length; i++) {
-    if (answer[i].innerText === Library.questions[numberOftask].correct) {
+    if (answer[i].innerText === library.questions[numberOftask].correct) {
       answer[i].classList.add('answer-container_right');
       checked = true;
       timeLock = true;
       if (!autoShow && userWrong === false) {
-        test1.rightAnswersSum++;
+        test.rightAnswersSum++;
         userWrong = true;
       }
     }
@@ -122,7 +132,7 @@ function showRightAnswer(autoShow) {
 }
 
 function showWrongAnswer(e) {
-  if (checked === false && answer[e].innerText !== Library.questions[numberOftask].correct) {
+  if (checked === false && answer[e].innerText !== library.questions[numberOftask].correct) {
     answer[e].classList.add('answer-container_wrong');
     userWrong = true;
   }
@@ -205,8 +215,6 @@ button.addEventListener('click', function() {
 });
 timeOut();
 updateUi();
-
-
 
 
 
