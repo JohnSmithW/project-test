@@ -6,7 +6,7 @@ var answer = document.querySelectorAll('.answer-container');
 var stopAfunction = 0;
 var titleList = ['word 1', 'Word 2', 'Word 3', 'Word 4', 'Word 5', 'Word 6', 'Word 7', 'Word 8', 'Word 9', 'Word 10'];
 var loopOut = 1;
-s
+
 
 
 
