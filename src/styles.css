@@ -22,6 +22,10 @@ body {
   user-select: none;
 }
 
+.main__hidden {
+  display: none;
+}
+
 .timer-container {
   padding-top: 1vmax;
 }
@@ -32,7 +36,7 @@ body {
 
 .progress-box {
   background: #ddd;
-  border-radius: .375rem;
+  border-radius: 0.375rem;
   display: inline-block;
   height: 1.5vmax;
   margin-top: 1.5vmax;
@@ -43,8 +47,8 @@ body {
   width: 0;
   height: 100%;
   background-color: #47f9ff;
-  border-radius: .375rem;
-  transition: width .2s cubic-bezier(.02, .01, .47, 1);
+  border-radius: 0.375rem;
+  transition: width 0.2s cubic-bezier(0.02, 0.01, 0.47, 1);
 }
 
 .progress-bar:hover {
@@ -144,4 +148,49 @@ body {
 
 .button-text {
   font-size: 1.2vmax;
+}
+
+.start-test-container {
+  width: 60%;
+  height: 30vmax;
+  box-shadow: 0 0 1vmax #ddd;
+  background: white;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+  padding: 0 2vmax;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.start-test-title {
+  font-size: 1.5vmax;
+}
+
+.start-test-block {
+  margin-top: 2vmax;
+  background: #f0f0f0b4;
+  border-radius: 0.4vmax;
+  padding: 1vmax;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.start-test-block:hover {
+  background-color: #47f9ff;
+  transition: 0.5s;
+}
+
+.start-test-container__hidden {
+  display: none;
+}
+
+.start-button {
+  font-size: 1.5vmax;
 }

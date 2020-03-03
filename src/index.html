@@ -12,7 +12,17 @@
 
 <body>
   <div class="container">
-    <div class="main">
+
+    <div class="start-test-container">
+      <h1 class="start-test-title">To start test press the button:</h1>
+      <div class="line"></div>
+      <div class="start-test-block">
+        <span class="start-button">Start test</span>
+      </div>
+    </div>
+
+
+    <div class="main main__hidden">
       <div class="timer-container">
         <div class="timer">10</div>
       </div>
@@ -22,10 +32,10 @@
       </div>
       <div class="task">
         <h1 class="task-title"></h1>
-        <span class="task-word"><span>
+        <span class="task-word"></span>
       </div>
 
-     <div class="line"></div>
+      <div class="line"></div>
       <div class="answers-box">
         <div>
           <div class="answer-container">
@@ -46,12 +56,13 @@
       </div>
 
       <div class="button-container">
-        <button class="button"><span class="button-text">Next</span></button>
+        <button type="button" class="button"><span class="button-text">Next</span></button>
       </div>
 
     </div>
+  </div>
 
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 
 </html>

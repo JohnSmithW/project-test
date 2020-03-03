@@ -25,7 +25,7 @@
   // Prohibit use of a variable before it is defined.
   "latedef": true,
   // Enforce line length to 100 characters
-  "maxlen": 100,
+  "maxlen": 120,
   // Require capitalized names for constructor functions.
   "newcap": true,
   // Enforce use of single quotation marks for strings.

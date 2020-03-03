@@ -3,15 +3,11 @@
 
 var taskSelector = document.querySelector('.task');
 var answer = document.querySelectorAll('.answer-container');
-var stopAfunction = 0;
 var titleList = ['word 1', 'Word 2', 'Word 3', 'Word 4', 'Word 5', 'Word 6', 'Word 7', 'Word 8', 'Word 9', 'Word 10'];
-var testPosition = 1;
 var startTestButton = document.querySelector('.start-button');
 var startTestContainer = document.querySelector('.start-test-container');
 var container = document.querySelector('.main');
 var content = document.querySelector('.container');
-var numberOftask = 0;
-var start = 0;
 
 function QuestionLibrary() {
   this.questions = [
@@ -44,75 +40,52 @@ function QuestionLibrary() {
 const library = new QuestionLibrary();
 
 
-
 function Test(questions) {
   this.questions = questions;
-  this.status = false;
-  this.rightAnswersSum = 0;
-  this.numberOftask = 0;
-  this.answersBox = [];
-  this.run = function() {
-    this.status = true;
+  this.currentQuestion = 0;
+  this.results = [];
+  this.next = function() {
+    if (this.currentQuestion <= 9) {
+      this.currentQuestion++;
+    }
   };
   this.answer = function(questionId, answer) {
-    if (this.status === true) {
-      this.questions[questionId].answer = answer;
-    }
+    questionId = this.currentQuestion;
+    answer = this.questions[questionId].correct;
+    return (answer);
   };
-  this.getRandomAnswer = function() {
-    if (this.status === true) {
-      var random1;
-      var random2;
-      var random3;
-      var random4;
-      var numbers = [];
-      while (numbers.length < 4) {
-        var randomNumber = Math.floor(Math.random() * 4);
-        if (numbers.indexOf(randomNumber) === -1) {
-          numbers.push(randomNumber);
-        }
-      }
-      window.random1 = numbers[0];
-      window.random2 = numbers[1];
-      window.random3 = numbers[2];
-      window.random4 = numbers[3];
-    }
+  this.answers = function(questionId, answers) {
+    questionId = this.currentQuestion;
+    answers = this.questions[questionId].answers;
+    return (answers);
   };
-  this.generateTask = function() {
-    this.getRandomAnswer();
-
-    this.answersBox = [];
-    this.answersBox.push(library.questions[this.numberOftask].answers[random1]);
-    this.answersBox.push(library.questions[this.numberOftask].answers[random2]);
-    this.answersBox.push(library.questions[this.numberOftask].answers[random3]);
-    this.answersBox.push(library.questions[this.numberOftask].answers[random4]);
-    this.numberOftask++;
-  }
 }
 
 const questions = library.getRandomQuestions();
 const test = new Test(questions);
 
 
-function generateTaskUI(title, index) {
-  if (testPosition < 10) {
-    test.generateTask();
-    taskSelector.innerHTML = '<h1 class="task-title">' + titleList[title] + ':' + '</h1><span class="task-word">' + library.questions[index].question + '</span>';
-    answer[0].innerHTML = '<div class ="answer">' + test.answersBox[0] + '</div>';
-    answer[1].innerHTML = '<div class ="answer">' + test.answersBox[1] + '</div>';
-    answer[2].innerHTML = '<div class ="answer">' + test.answersBox[2] + '</div>';
-    answer[3].innerHTML = '<div class ="answer">' + test.answersBox[3] + '</div>';
+function generateTaskUI(testName) {
+  if (testName.currentQuestion < 10) {
+    taskSelector.innerHTML = '<h1 class="task-title">' + titleList[testName.currentQuestion] + ':' +
+      '</h1><span class="task-word">' + testName.questions[testName.currentQuestion].question + '</span>';
+    answer[0].innerHTML = '<div class ="answer">' + testName.answers()[0] + '</div>';
+    answer[1].innerHTML = '<div class ="answer">' + testName.answers()[1] + '</div>';
+    answer[2].innerHTML = '<div class ="answer">' + testName.answers()[2] + '</div>';
+    answer[3].innerHTML = '<div class ="answer">' + testName.answers()[3] + '</div>';
   }
-  if (testPosition >= 10) {
+  if (testName.currentQuestion >= 10) {
     container.classList.add('main__hidden');
     taskSelector.innerHTML = '<h1 class="task-title">' + 'total' + ':' + '</h1>';
     var resultBox = document.createElement('div');
     resultBox.className = 'start-test-container';
-    resultBox.innerHTML = '<span class="task-word">' + 'Right answers: ' + test.rightAnswersSum + '</span>';
+    resultBox.innerHTML = '<span class="task-word">' + 'Right answers: ' + test.results.length + '</span>';
     content.appendChild(resultBox);
   }
 }
 
+
+var start = 0;
 
 function progress() {
   start += 10;
@@ -129,14 +102,14 @@ var userWrong = false;
 var pass = false;
 
 function showRightAnswer(autoShow) {
-  if (testPosition <= 10) {
+  if (test.currentQuestion <= 9) {
     for (var i = 0; i < answer.length; i++) {
-      if (answer[i].innerText === library.questions[numberOftask].correct) {
+      if (answer[i].innerText === test.answer()) {
         answer[i].classList.add('answer-container_right');
         checked = true;
         timeLock = true;
         if (!autoShow && userWrong === false) {
-          test.rightAnswersSum++;
+          test.results.push(answer[i].innerText);
           userWrong = true;
         }
       }
@@ -146,7 +119,7 @@ function showRightAnswer(autoShow) {
 }
 
 function showWrongAnswer(e) {
-  if (checked === false && answer[e].innerText !== library.questions[numberOftask].correct) {
+  if (checked === false && answer[e].innerText !== test.answer()) {
     answer[e].classList.add('answer-container_wrong');
     userWrong = true;
   }
@@ -181,24 +154,11 @@ function isAnswerRight() {
   });
 }
 
-function updateUi() {
-  generateTaskUI(numberOftask, numberOftask);
-  test.getRandomAnswer();
+function updateUi(testName) {
+  testName.next();
+  generateTaskUI(testName);
   isAnswerRight();
 }
-
-
-function startTest(testName) {
-  testName.run();
-  updateUi();
-  timeOut();
-  startTestContainer.classList.add('start-test-container__hidden');
-  container.classList.remove('main__hidden');
-}
-startTestButton.addEventListener('click', function() {
-  startTest(test);
-});
-
 
 function timeOut(time) {
   time = 10;
@@ -211,15 +171,26 @@ function timeOut(time) {
         clearInterval(countDown);
         timer.innerHTML = 'time out !';
         showRightAnswer(true);
-        stopAfunction = 1;
       }
     } else {
       clearInterval(countDown);
-      timer.innerHTML = time + 1;
     }
   }, 1000);
-
 }
+
+
+function startTest() {
+  generateTaskUI(test);
+  isAnswerRight();
+  timeOut();
+  startTestContainer.classList.add('start-test-container__hidden');
+  container.classList.remove('main__hidden');
+}
+startTestButton.addEventListener('click', function() {
+  startTest(test);
+});
+
+
 
 
 var button = document.querySelector('.button');
@@ -228,26 +199,10 @@ var button = document.querySelector('.button');
 button.addEventListener('click', function() {
   if (pass === true) {
     cleanAnswers();
-    numberOftask += 1;
     timeLock = false;
     timeOut();
     progress();
-    updateUi();
-    testPosition += 1;
+    updateUi(test);
     pass = false;
   }
 });
-
-/*
-  function progress(time) {
-    var start = 0;
-    var time = Math.round(time * 1000 / 100);
-    var progressElement = document.querySelector('.progress-bar');
-    var timer = setInterval(function() {
-      if (start > 100) {
-        clearInterval(timer);
-      } else { progressElement.style.width = start + '%' }
-      start++;
-    }, time);
-  }
-*/
