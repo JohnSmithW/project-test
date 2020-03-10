@@ -66,11 +66,9 @@ body {
 }
 
 .task-word {
-  background-color: #47f9ff;
   border-radius: 0.5vmax;
   margin-left: 0.5vmax;
   font-size: 1.6vmax;
-  padding: 0.5vmax;
 }
 
 .answers-box {
@@ -126,28 +124,31 @@ body {
 
 .button-container {
   margin: 1vmax;
+  margin-top: 2vmax;
   display: flex;
   justify-content: center;
 }
 
 .button {
-  background: #f0f0f0b4;
-  width: 40%;
+  background: white;
+  width: 20%;
   height: 2vmax;
   border: none;
   outline: none;
   border-radius: 2vmax;
   cursor: pointer;
   user-select: none;
+  transition: background 1s;
 }
 
-.button:hover {
+.button:active {
   background-color: #47f9ff;
-  transition: 0.5s;
+  background-size: 100%;
+  transition: background 0s;
 }
 
 .button-text {
-  font-size: 1.2vmax;
+  font-size: 1.5vmax;
 }
 
 .start-test-container {

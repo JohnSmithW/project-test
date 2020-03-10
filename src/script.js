@@ -1,5 +1,6 @@
 'use strict';
-
+import './styles.css';
+var _ = require('lodash');
 
 var taskSelector = document.querySelector('.task');
 var answer = document.querySelectorAll('.answer-container');
@@ -40,6 +41,7 @@ function QuestionLibrary() {
 const library = new QuestionLibrary();
 
 
+
 function Test(questions) {
   this.questions = questions;
   this.currentQuestion = 0;
@@ -64,16 +66,28 @@ function Test(questions) {
 const questions = library.getRandomQuestions();
 const test = new Test(questions);
 
+var titleTemplate = '<h1 class="task-title"><%= title %> : </h1><span class="task-word"><%= question %></span>';
+var titleTemplateFunction = _.template(titleTemplate);
+
+var answerTemplate = '<div class ="answer"><%= answer%></div>';
+var answerTemplateFunction = _.template(answerTemplate);
+
 
 function generateTaskUI(testName) {
   if (testName.currentQuestion < 10) {
-    taskSelector.innerHTML = '<h1 class="task-title">' + titleList[testName.currentQuestion] + ':' +
-      '</h1><span class="task-word">' + testName.questions[testName.currentQuestion].question + '</span>';
-    answer[0].innerHTML = '<div class ="answer">' + testName.answers()[0] + '</div>';
-    answer[1].innerHTML = '<div class ="answer">' + testName.answers()[1] + '</div>';
-    answer[2].innerHTML = '<div class ="answer">' + testName.answers()[2] + '</div>';
-    answer[3].innerHTML = '<div class ="answer">' + testName.answers()[3] + '</div>';
+    var titleHTML = titleTemplateFunction({
+      'title': titleList[testName.currentQuestion],
+      'question': testName.questions[testName.currentQuestion].question
+    });
+    taskSelector.innerHTML = titleHTML;
+    answer[0].innerHTML = answerTemplateFunction({ 'answer': testName.answers()[0] });
+    answer[1].innerHTML = answerTemplateFunction({ 'answer': testName.answers()[1] });
+    answer[2].innerHTML = answerTemplateFunction({ 'answer': testName.answers()[2] });
+    answer[3].innerHTML = answerTemplateFunction({ 'answer': testName.answers()[3] });
   }
+}
+
+function showResults(testName) {
   if (testName.currentQuestion >= 10) {
     container.classList.add('main__hidden');
     taskSelector.innerHTML = '<h1 class="task-title">' + 'total' + ':' + '</h1>';
@@ -85,16 +99,24 @@ function generateTaskUI(testName) {
 }
 
 
-var start = 0;
 
-function progress() {
-  start += 10;
-  var progressElement = document.querySelector('.progress-bar');
-  if (start > 100) {
-    start = 100;
-  } else { progressElement.style.width = start + '%'; }
 
+function Progress(options) {
+  this.start = 0;
+  this.run = function() {
+    this.start += 10;
+    var progressElement = options.progressElement;
+    if (this.start > 100) {
+      this.start = 100;
+    } else { progressElement.style.width = this.start + '%'; }
+  };
 }
+
+
+
+const progress = new Progress({
+  progressElement: document.querySelector('.progress-bar')
+});
 
 var checked = false;
 var timeLock = false;
@@ -115,6 +137,7 @@ function showRightAnswer(autoShow) {
       }
     }
     pass = true;
+    timeLock = true;
   }
 }
 
@@ -136,37 +159,35 @@ function cleanAnswers() {
 }
 
 function isAnswerRight() {
-  answer[0].addEventListener('click', function() {
-    showWrongAnswer(0);
-    showRightAnswer(false);
-  });
-  answer[1].addEventListener('click', function() {
-    showWrongAnswer(1);
-    showRightAnswer(false);
-  });
-  answer[2].addEventListener('click', function() {
-    showWrongAnswer(2);
-    showRightAnswer(false);
-  });
-  answer[3].addEventListener('click', function() {
-    showWrongAnswer(3);
-    showRightAnswer(false);
-  });
+  for (var i = 0; i < answer.length; i++) {
+    answer[i].addEventListener('click', (function(i) {
+      return function() {
+        showWrongAnswer(i);
+        showRightAnswer(false);
+      };
+    })(i));
+  }
 }
+
+
 
 function updateUi(testName) {
   testName.next();
   generateTaskUI(testName);
+  showResults(test);
   isAnswerRight();
 }
 
+
 function timeOut(time) {
   time = 10;
+  timeLock = false;
   var countDown = setInterval(() => {
-    var timer = document.querySelector('.timer');
-    timer.innerHTML = time;
-    time -= 1;
     if (timeLock === false) {
+      var timer = document.querySelector('.timer');
+      timer.innerHTML = time;
+      time -= 1;
+
       if (time < 0) {
         clearInterval(countDown);
         timer.innerHTML = 'time out !';
@@ -176,6 +197,7 @@ function timeOut(time) {
       clearInterval(countDown);
     }
   }, 1000);
+
 }
 
 
@@ -193,15 +215,17 @@ startTestButton.addEventListener('click', function() {
 
 
 
+
 var button = document.querySelector('.button');
+
+
 
 
 button.addEventListener('click', function() {
   if (pass === true) {
     cleanAnswers();
-    timeLock = false;
     timeOut();
-    progress();
+    progress.run();
     updateUi(test);
     pass = false;
   }
