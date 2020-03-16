@@ -1,6 +1,12 @@
 'use strict';
 import './styles.css';
-var _ = require('lodash');
+import { QuestionLibrary } from './js/questionLibrary.mjs';
+import { Test } from './js/test.mjs';
+import { Progress } from './js/progress.mjs';
+// import { answerTemplate, answerTemplateFunction } from './templates/answerTemplate.mjs';
+// import { titleTemplate, titleTemplateFunction } from './templates/titleTemplate.mjs';
+const _ = require('lodash');
+
 
 var taskSelector = document.querySelector('.task');
 var answer = document.querySelectorAll('.answer-container');
@@ -10,68 +16,17 @@ var startTestContainer = document.querySelector('.start-test-container');
 var container = document.querySelector('.main');
 var content = document.querySelector('.container');
 
-function QuestionLibrary() {
-  this.questions = [
-    { id: 1, question: 'a dog', answers: ['собака', 'кошка', 'спутник', 'машина'], correct: 'собака' },
-    { id: 2, question: 'a cat', answers: ['вид', 'кошка', 'самолет', 'двигатель'], correct: 'кошка' },
-    { id: 3, question: 'to run', answers: ['сказать', 'светофор', 'бегать', 'проект'], correct: 'бегать' },
-    { id: 4, question: 'to swim', answers: ['кошка', 'плавать', 'бегать', 'помнить'], correct: 'плавать' },
-    { id: 5, question: 'to jump', answers: ['лежать', 'ответить', 'прыгать', 'решать'], correct: 'прыгать' },
-    { id: 6, question: 'to fly', answers: ['летать', 'одежда', 'прыгать', 'требовать'], correct: 'летать' },
-    { id: 7, question: 'a monitor', answers: ['собака', 'монитор', 'жизнь', 'дом'], correct: 'монитор' },
-    { id: 8, question: 'clothes', answers: ['день', 'процесс', 'качество', 'одежда'], correct: 'одежда' },
-    { id: 9, question: 'a system', answers: ['государство', 'система', 'прыгать', 'роль'], correct: 'система' },
-    { id: 10, question: 'a project', answers: ['идея', 'проект', 'номер', 'доллар'], correct: 'проект' }
-  ];
-  this.getRandomQuestions = function() {
-    var readyList = [];
-    var randomList = [];
-    while (randomList.length < 10) {
-      var number = Math.floor(Math.random() * 10);
-      if (randomList.indexOf(number) === -1) {
-        randomList.push(number);
-      }
-    }
-    for (var i of randomList) {
-      readyList.push(this.questions[i]);
-    }
-    return (readyList);
-  };
-}
+
 const library = new QuestionLibrary();
-
-
-
-function Test(questions) {
-  this.questions = questions;
-  this.currentQuestion = 0;
-  this.results = [];
-  this.next = function() {
-    if (this.currentQuestion <= 9) {
-      this.currentQuestion++;
-    }
-  };
-  this.answer = function(questionId, answer) {
-    questionId = this.currentQuestion;
-    answer = this.questions[questionId].correct;
-    return (answer);
-  };
-  this.answers = function(questionId, answers) {
-    questionId = this.currentQuestion;
-    answers = this.questions[questionId].answers;
-    return (answers);
-  };
-}
-
 const questions = library.getRandomQuestions();
 const test = new Test(questions);
 
 var titleTemplate = '<h1 class="task-title"><%= title %> : </h1><span class="task-word"><%= question %></span>';
 var titleTemplateFunction = _.template(titleTemplate);
 
+
 var answerTemplate = '<div class ="answer"><%= answer%></div>';
 var answerTemplateFunction = _.template(answerTemplate);
-
 
 function generateTaskUI(testName) {
   if (testName.currentQuestion < 10) {
@@ -87,6 +42,7 @@ function generateTaskUI(testName) {
   }
 }
 
+
 function showResults(testName) {
   if (testName.currentQuestion >= 10) {
     container.classList.add('main__hidden');
@@ -99,18 +55,9 @@ function showResults(testName) {
 }
 
 
-
-
-function Progress(options) {
-  this.start = 0;
-  this.run = function() {
-    this.start += 10;
-    var progressElement = options.progressElement;
-    if (this.start > 100) {
-      this.start = 100;
-    } else { progressElement.style.width = this.start + '%'; }
-  };
-}
+var timeLock = false;
+var countDown;
+var timeConverter = 0;
 
 
 
@@ -118,10 +65,11 @@ const progress = new Progress({
   progressElement: document.querySelector('.progress-bar')
 });
 
+
 var checked = false;
-var timeLock = false;
 var userWrong = false;
 var pass = false;
+
 
 function showRightAnswer(autoShow) {
   if (test.currentQuestion <= 9) {
@@ -148,17 +96,7 @@ function showWrongAnswer(e) {
   }
 }
 
-
-function cleanAnswers() {
-  for (var i = 0; i < answer.length; i++) {
-    answer[i].classList.remove('answer-container_right');
-    answer[i].classList.remove('answer-container_wrong');
-  }
-  checked = false;
-  userWrong = false;
-}
-
-function isAnswerRight() {
+function answerCheckLauncher() {
   for (var i = 0; i < answer.length; i++) {
     answer[i].addEventListener('click', (function(i) {
       return function() {
@@ -170,40 +108,52 @@ function isAnswerRight() {
 }
 
 
-
-function updateUi(testName) {
-  testName.next();
-  generateTaskUI(testName);
-  showResults(test);
-  isAnswerRight();
+function cleanAnswers() {
+  for (var i = 0; i < answer.length; i++) {
+    answer[i].classList.remove('answer-container_right');
+    answer[i].classList.remove('answer-container_wrong');
+  }
+  checked = false;
+  userWrong = false;
 }
 
 
 function timeOut(time) {
   time = 10;
   timeLock = false;
-  var countDown = setInterval(() => {
+  countDown = setInterval(() => {
+    timeConverter += 5;
     if (timeLock === false) {
       var timer = document.querySelector('.timer');
-      timer.innerHTML = time;
-      time -= 1;
-
-      if (time < 0) {
-        clearInterval(countDown);
-        timer.innerHTML = 'time out !';
-        showRightAnswer(true);
+      if (timeConverter >= 1000) {
+        timer.innerHTML = time;
+        time -= 1;
+        timeConverter = 0;
+        if (time < 0) {
+          clearInterval(countDown);
+          timer.innerHTML = 'time out !';
+          showRightAnswer(true);
+        }
       }
     } else {
       clearInterval(countDown);
     }
-  }, 1000);
+  }, 1);
 
+}
+
+
+function updateUi(testName) {
+  testName.next();
+  generateTaskUI(testName);
+  showResults(test);
+  answerCheckLauncher();
 }
 
 
 function startTest() {
   generateTaskUI(test);
-  isAnswerRight();
+  answerCheckLauncher();
   timeOut();
   startTestContainer.classList.add('start-test-container__hidden');
   container.classList.remove('main__hidden');
@@ -213,17 +163,11 @@ startTestButton.addEventListener('click', function() {
 });
 
 
-
-
-
 var button = document.querySelector('.button');
-
-
-
-
 button.addEventListener('click', function() {
   if (pass === true) {
     cleanAnswers();
+    clearInterval(countDown);
     timeOut();
     progress.run();
     updateUi(test);

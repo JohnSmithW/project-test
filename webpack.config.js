@@ -7,7 +7,7 @@ const HtmlReplaceWebpackPlugin = require('html-replace-webpack-plugin');
 
 module.exports = {
   entry: {
-    app: './src/script.js'
+    app: './src/app.js'
   },
   plugins: [
     new CleanWebpackPlugin(),
@@ -21,7 +21,7 @@ module.exports = {
         replacement: '<link rel="stylesheet" href="app.min.css">'
       },
       {
-        pattern: ' <script src="script.js"></script>',
+        pattern: ' <script src="app.js"></script>',
         replacement: ' <script src="app.min.js"></script>'
       },
     ]),
