@@ -3,9 +3,11 @@ import './styles.css';
 import { QuestionLibrary } from './js/questionLibrary.mjs';
 import { Test } from './js/test.mjs';
 import { Progress } from './js/progress.mjs';
-// import { answerTemplate, answerTemplateFunction } from './templates/answerTemplate.mjs';
-// import { titleTemplate, titleTemplateFunction } from './templates/titleTemplate.mjs';
-const _ = require('lodash');
+const _ = require('lodash'); // jshint ignore:line
+var answerTemplate = require('./templates/answerTemplate.html'); // jshint ignore:line
+var titleTemplate = require('./templates/titleTemplate.html');
+var resultsHeaderTemplate = require('./templates/resultsHeaderTemplate.html');
+var resultsContentTemplate = require('./templates/resultsContentTemplate.html');
 
 
 var taskSelector = document.querySelector('.task');
@@ -21,39 +23,87 @@ const library = new QuestionLibrary();
 const questions = library.getRandomQuestions();
 const test = new Test(questions);
 
-var titleTemplate = '<h1 class="task-title"><%= title %> : </h1><span class="task-word"><%= question %></span>';
-var titleTemplateFunction = _.template(titleTemplate);
 
 
-var answerTemplate = '<div class ="answer"><%= answer%></div>';
-var answerTemplateFunction = _.template(answerTemplate);
+
 
 function generateTaskUI(testName) {
   if (testName.currentQuestion < 10) {
-    var titleHTML = titleTemplateFunction({
+    var titleHTML = titleTemplate({
       'title': titleList[testName.currentQuestion],
       'question': testName.questions[testName.currentQuestion].question
     });
     taskSelector.innerHTML = titleHTML;
-    answer[0].innerHTML = answerTemplateFunction({ 'answer': testName.answers()[0] });
-    answer[1].innerHTML = answerTemplateFunction({ 'answer': testName.answers()[1] });
-    answer[2].innerHTML = answerTemplateFunction({ 'answer': testName.answers()[2] });
-    answer[3].innerHTML = answerTemplateFunction({ 'answer': testName.answers()[3] });
+    answer[0].innerHTML = answerTemplate({ 'answer': testName.answers()[0] });
+    answer[1].innerHTML = answerTemplate({ 'answer': testName.answers()[1] });
+    answer[2].innerHTML = answerTemplate({ 'answer': testName.answers()[2] });
+    answer[3].innerHTML = answerTemplate({ 'answer': testName.answers()[3] });
+  }
+
+}
+
+class TotalScore extends HTMLElement {
+  connectedCallback() {
+    var heading = '';
+    if (test.results.length >= 8) {
+      heading = resultsHeaderTemplate({
+        'spotlight': 'answer-container_right',
+        'score': test.results.length,
+        'index': test.questions.length
+      });
+    } else if (test.results.length > 4 && test.results.length < 8) {
+      heading = resultsHeaderTemplate({
+        'spotlight': 'answer-container_medium',
+        'score': test.results.length,
+        'index': test.questions.length
+      });
+    } else if (test.results.length <= 4) {
+      heading = resultsHeaderTemplate({
+        'spotlight': 'answer-container_wrong',
+        'score': test.results.length,
+        'index': test.questions.length
+      });
+    }
+    var total = '';
+    for (var i = 0; i < 10; i++) {
+      total += resultsContentTemplate({
+        'index': i + 1,
+        'word': test.questions[i].question,
+        'doit': test.chosenWords[i].state,
+        'chosenWord': test.chosenWords[i].answer
+      });
+    }
+    this.innerHTML =
+      '<div class="total">' +
+      heading +
+      total + ' <div class="button-container button-container_restart">' +
+      '<button type="button" class="button button_restart"><span class="button-text">Restart test</span></button>' +
+      '</div>' +
+      '</div>';
   }
 }
+
+function restartTest() {
+  var restartButton = document.querySelector('.button-container_restart');
+  restartButton.addEventListener('click', function() {
+    window.location.reload();
+  });
+}
+
+
+window.customElements.define('total-score', TotalScore);
 
 
 function showResults(testName) {
   if (testName.currentQuestion >= 10) {
     container.classList.add('main__hidden');
-    taskSelector.innerHTML = '<h1 class="task-title">' + 'total' + ':' + '</h1>';
     var resultBox = document.createElement('div');
-    resultBox.className = 'start-test-container';
-    resultBox.innerHTML = '<span class="task-word">' + 'Right answers: ' + test.results.length + '</span>';
+    resultBox.className = 'start-test-container_results';
+    resultBox.innerHTML = '<total-score class="total-score"></total-score>';
     content.appendChild(resultBox);
+    restartTest();
   }
 }
-
 
 var timeLock = false;
 var countDown;
@@ -80,7 +130,16 @@ function showRightAnswer(autoShow) {
         timeLock = true;
         if (!autoShow && userWrong === false) {
           test.results.push(answer[i].innerText);
+          test.chosenWords.push({
+            answer: answer[i].innerText,
+            state: 'answer-container_right'
+          });
           userWrong = true;
+        } else if (autoShow) {
+          test.chosenWords.push({
+            answer: 'time out!',
+            state: 'answer-container_wrong'
+          });
         }
       }
     }
@@ -93,12 +152,17 @@ function showWrongAnswer(e) {
   if (checked === false && answer[e].innerText !== test.answer()) {
     answer[e].classList.add('answer-container_wrong');
     userWrong = true;
+    test.chosenWords.push({
+      answer: answer[e].innerText,
+      state: 'answer-container_wrong'
+    });
   }
 }
 
+
 function answerCheckLauncher() {
   for (var i = 0; i < answer.length; i++) {
-    answer[i].addEventListener('click', (function(i) {
+    answer[i].addEventListener('click', (function(i) { // jshint ignore:line
       return function() {
         showWrongAnswer(i);
         showRightAnswer(false);

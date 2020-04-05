@@ -4,6 +4,7 @@ export function Test(questions) {
   this.questions = questions;
   this.currentQuestion = 0;
   this.results = [];
+  this.chosenWords = [];
   this.next = function() {
     if (this.currentQuestion <= 9) {
       this.currentQuestion++;

@@ -8,6 +8,8 @@
         "style": "any"
       }
     ],
-    "wcag/h30": ["warn"]
+    "wcag/h30": ["warn"],
+    "empty-heading": [0],
+    "deprecated-rule": [0]
   }
 }

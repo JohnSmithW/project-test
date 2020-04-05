@@ -36,14 +36,22 @@ module.exports = {
 
   module: {
     rules: [{
-      test: /\.css$/,
-      use: [
-        "style-loader",
-        MiniCssExtractPlugin.loader,
-        'css-loader',
-        'postcss-loader'
-      ],
-    }, ],
+        test: /\.css$/,
+        use: [
+          "style-loader",
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'postcss-loader'
+        ],
+      },
+      {
+        test: /\.html$/,
+        loader: "underscore-template-loader",
+        query: {
+          engine: 'lodash',
+        }
+      }
+    ],
   },
 
 };
