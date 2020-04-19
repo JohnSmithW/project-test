@@ -6,8 +6,9 @@ import { Progress } from './js/progress.mjs';
 const _ = require('lodash'); // jshint ignore:line
 var answerTemplate = require('./templates/answerTemplate.html'); // jshint ignore:line
 var titleTemplate = require('./templates/titleTemplate.html');
-var resultsHeaderTemplate = require('./templates/resultsHeaderTemplate.html');
-var resultsContentTemplate = require('./templates/resultsContentTemplate.html');
+var resultsHeaderTemplate = require('./templates/resultsHeaderTemplate.html'); // jshint ignore:line
+var resultsContentTemplate = require('./templates/resultsContentTemplate.html'); // jshint ignore:line
+var totalScoreTemplate = require('./templates/totalScoreTemplate.html'); // jshint ignore:line
 
 
 var taskSelector = document.querySelector('.task');
@@ -24,12 +25,9 @@ const questions = library.getRandomQuestions();
 const test = new Test(questions);
 
 
-
-
-
 function generateTaskUI(testName) {
   if (testName.currentQuestion < 10) {
-    var titleHTML = titleTemplate({
+    const titleHTML = titleTemplate({
       'title': titleList[testName.currentQuestion],
       'question': testName.questions[testName.currentQuestion].question
     });
@@ -42,46 +40,6 @@ function generateTaskUI(testName) {
 
 }
 
-class TotalScore extends HTMLElement {
-  connectedCallback() {
-    var heading = '';
-    if (test.results.length >= 8) {
-      heading = resultsHeaderTemplate({
-        'spotlight': 'answer-container_right',
-        'score': test.results.length,
-        'index': test.questions.length
-      });
-    } else if (test.results.length > 4 && test.results.length < 8) {
-      heading = resultsHeaderTemplate({
-        'spotlight': 'answer-container_medium',
-        'score': test.results.length,
-        'index': test.questions.length
-      });
-    } else if (test.results.length <= 4) {
-      heading = resultsHeaderTemplate({
-        'spotlight': 'answer-container_wrong',
-        'score': test.results.length,
-        'index': test.questions.length
-      });
-    }
-    var total = '';
-    for (var i = 0; i < 10; i++) {
-      total += resultsContentTemplate({
-        'index': i + 1,
-        'word': test.questions[i].question,
-        'doit': test.chosenWords[i].state,
-        'chosenWord': test.chosenWords[i].answer
-      });
-    }
-    this.innerHTML =
-      '<div class="total">' +
-      heading +
-      total + ' <div class="button-container button-container_restart">' +
-      '<button type="button" class="button button_restart"><span class="button-text">Restart test</span></button>' +
-      '</div>' +
-      '</div>';
-  }
-}
 
 function restartTest() {
   var restartButton = document.querySelector('.button-container_restart');
@@ -91,23 +49,64 @@ function restartTest() {
 }
 
 
-window.customElements.define('total-score', TotalScore);
-
-
 function showResults(testName) {
+  var score = test.results.length;
+
   if (testName.currentQuestion >= 10) {
+    var heading = '';
+    if (score >= 8) {
+      heading = resultsHeaderTemplate({
+        'spotlight': 'answer-container_right',
+        'score': test.results.length,
+        'index': test.questions.length
+      });
+    } else if (score > 4 && score < 8) {
+      heading = resultsHeaderTemplate({
+        'spotlight': 'answer-container_medium',
+        'score': test.results.length,
+        'index': test.questions.length
+      });
+    } else if (score <= 4) {
+      heading = resultsHeaderTemplate({
+        'spotlight': 'answer-container_wrong',
+        'score': test.results.length,
+        'index': test.questions.length
+      });
+    }
+
+
+    var total = '';
+
+    for (var i = 0; i < 10; i++) {
+      total += resultsContentTemplate({
+        'index': i + 1,
+        'word': test.questions[i].question,
+        'doit': test.chosenWords[i].state,
+        'chosenWord': test.chosenWords[i].answer
+      });
+    }
+
     container.classList.add('main__hidden');
     var resultBox = document.createElement('div');
     resultBox.className = 'start-test-container_results';
-    resultBox.innerHTML = '<total-score class="total-score"></total-score>';
+    resultBox.innerHTML = totalScoreTemplate({
+      'heading': heading,
+      'total': total
+    });
     content.appendChild(resultBox);
     restartTest();
   }
 }
 
-var timeLock = false;
-var countDown;
-var timeConverter = 0;
+var state = {
+  timeLock: false,
+  countDown: 0,
+  timeConverter: 0,
+  checked: false,
+  userWrong: false,
+  pass: false
+};
+
 
 
 
@@ -116,9 +115,6 @@ const progress = new Progress({
 });
 
 
-var checked = false;
-var userWrong = false;
-var pass = false;
 
 
 function showRightAnswer(autoShow) {
@@ -126,15 +122,15 @@ function showRightAnswer(autoShow) {
     for (var i = 0; i < answer.length; i++) {
       if (answer[i].innerText === test.answer()) {
         answer[i].classList.add('answer-container_right');
-        checked = true;
-        timeLock = true;
-        if (!autoShow && userWrong === false) {
+        state.checked = true;
+        state.timeLock = true;
+        if (!autoShow && state.userWrong === false) {
           test.results.push(answer[i].innerText);
           test.chosenWords.push({
             answer: answer[i].innerText,
             state: 'answer-container_right'
           });
-          userWrong = true;
+          state.userWrong = true;
         } else if (autoShow) {
           test.chosenWords.push({
             answer: 'time out!',
@@ -143,15 +139,15 @@ function showRightAnswer(autoShow) {
         }
       }
     }
-    pass = true;
-    timeLock = true;
+    state.pass = true;
+    state.timeLock = true;
   }
 }
 
 function showWrongAnswer(e) {
-  if (checked === false && answer[e].innerText !== test.answer()) {
+  if (state.checked === false && answer[e].innerText !== test.answer()) {
     answer[e].classList.add('answer-container_wrong');
-    userWrong = true;
+    state.userWrong = true;
     test.chosenWords.push({
       answer: answer[e].innerText,
       state: 'answer-container_wrong'
@@ -177,30 +173,30 @@ function cleanAnswers() {
     answer[i].classList.remove('answer-container_right');
     answer[i].classList.remove('answer-container_wrong');
   }
-  checked = false;
-  userWrong = false;
+  state.checked = false;
+  state.userWrong = false;
 }
 
 
 function timeOut(time) {
   time = 10;
-  timeLock = false;
-  countDown = setInterval(() => {
-    timeConverter += 5;
-    if (timeLock === false) {
+  state.timeLock = false;
+  state.countDown = setInterval(() => {
+    state.timeConverter += 5;
+    if (state.timeLock === false) {
       var timer = document.querySelector('.timer');
-      if (timeConverter >= 1000) {
+      if (state.timeConverter >= 1000) {
         timer.innerHTML = time;
         time -= 1;
-        timeConverter = 0;
+        state.timeConverter = 0;
         if (time < 0) {
-          clearInterval(countDown);
+          clearInterval(state.countDown);
           timer.innerHTML = 'time out !';
           showRightAnswer(true);
         }
       }
     } else {
-      clearInterval(countDown);
+      clearInterval(state.countDown);
     }
   }, 1);
 
@@ -229,12 +225,12 @@ startTestButton.addEventListener('click', function() {
 
 var button = document.querySelector('.button');
 button.addEventListener('click', function() {
-  if (pass === true) {
+  if (state.pass === true) {
     cleanAnswers();
-    clearInterval(countDown);
+    clearInterval(state.countDown);
     timeOut();
     progress.run();
     updateUi(test);
-    pass = false;
+    state.pass = false;
   }
 });
