@@ -1,9 +1,17 @@
 const path = require('path');
+var merge = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlReplaceWebpackPlugin = require('html-replace-webpack-plugin');
-
+const productionConfig = merge([{
+  output: {
+    // Needed for code splitting to work in nested paths
+    publicPath: "/",
+    // Tweak this to match your GitHub project name
+    publicPath: "/webpack-demo/",
+  },
+}, ]);
 
 module.exports = {
   entry: {

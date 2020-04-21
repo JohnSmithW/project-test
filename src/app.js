@@ -18,11 +18,22 @@ var startTestButton = document.querySelector('.start-button');
 var startTestContainer = document.querySelector('.start-test-container');
 var container = document.querySelector('.main');
 var content = document.querySelector('.container');
+var state = {
+  timeLock: false,
+  countDown: 0,
+  timeConverter: 0,
+  checked: false,
+  userWrong: false,
+  pass: false
+};
 
 
 const library = new QuestionLibrary();
 const questions = library.getRandomQuestions();
 const test = new Test(questions);
+const progress = new Progress({
+  progressElement: document.querySelector('.progress-bar')
+});
 
 
 function generateTaskUI(testName) {
@@ -50,8 +61,9 @@ function restartTest() {
 
 
 function showResults(testName) {
-  var score = test.results.length;
 
+
+  var score = test.results.length;
   if (testName.currentQuestion >= 10) {
     var heading = '';
     if (score >= 8) {
@@ -76,7 +88,6 @@ function showResults(testName) {
 
 
     var total = '';
-
     for (var i = 0; i < 10; i++) {
       total += resultsContentTemplate({
         'index': i + 1,
@@ -85,7 +96,6 @@ function showResults(testName) {
         'chosenWord': test.chosenWords[i].answer
       });
     }
-
     container.classList.add('main__hidden');
     var resultBox = document.createElement('div');
     resultBox.className = 'start-test-container_results';
@@ -97,24 +107,6 @@ function showResults(testName) {
     restartTest();
   }
 }
-
-var state = {
-  timeLock: false,
-  countDown: 0,
-  timeConverter: 0,
-  checked: false,
-  userWrong: false,
-  pass: false
-};
-
-
-
-
-const progress = new Progress({
-  progressElement: document.querySelector('.progress-bar')
-});
-
-
 
 
 function showRightAnswer(autoShow) {
@@ -143,6 +135,7 @@ function showRightAnswer(autoShow) {
     state.timeLock = true;
   }
 }
+
 
 function showWrongAnswer(e) {
   if (state.checked === false && answer[e].innerText !== test.answer()) {
