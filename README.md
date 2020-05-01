@@ -54,7 +54,13 @@ npm run build
 npm run build-dev-mode
 ```
 
-**Публикация**
+## Тесты 
+
+```
+npm run test
+```
+
+## Публикация
 
 ```
 npm run deploy
