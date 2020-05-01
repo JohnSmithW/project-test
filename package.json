@@ -29,6 +29,7 @@
     "watch": "npm-watch",
     "dev-mode": "npm-run-all --parallel server watch",
     "postinstall": "npm i -g live-server html-validate jshint",
+    "test": "mocha src/tests/",
     "build": "webpack",
     "build-dev-mode": "npm-run-all jshint validate-html stylelint build server-build",
     "deploy": "gh-pages -d build"
@@ -36,7 +37,9 @@
   "author": "Kalagin Ivan",
   "license": "ISC",
   "devDependencies": {
+    "chai": "^4.2.0",
     "gh-pages": "^2.2.0",
+    "mocha": "^7.1.1",
     "npm-run-all": "^4.1.5",
     "npm-watch": "^0.6.0",
     "postcss-loader": "^3.0.0",
